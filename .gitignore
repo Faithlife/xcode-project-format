@@ -4,3 +4,8 @@ xcuserdata
 .build
 .swiftpm
 Package.resolved
+
+artifacts/
+bin/
+obj/
+release/
