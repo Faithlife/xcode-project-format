@@ -24,5 +24,47 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-    - name: Stub
-      run: echo "Hello"
+    - name: Check out code
+      uses: actions/checkout@v6
+    - name: Install .NET
+      uses: actions/setup-dotnet@v5
+    - name: Restore
+      run: ./build.ps1 restore
+    - name: Build
+      run: ./build.ps1 build --skip restore
+    - name: Test
+      run: ./build.ps1 test --skip build
+    - name: Package
+      run: ./build.ps1 package --skip test
+    - name: Upload packages
+      uses: actions/upload-artifact@v7
+      with:
+        name: nuget-packages
+        path: release/*.nupkg
+        if-no-files-found: error
+
+  publish:
+    name: Publish
+    runs-on: windows-latest
+    needs: build
+    if: github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master'
+    steps:
+    - name: Check out code
+      uses: actions/checkout@v6
+    - name: Install .NET
+      uses: actions/setup-dotnet@v5
+    - name: Download packages
+      uses: actions/download-artifact@v8
+      with:
+        name: nuget-packages
+        path: release
+    - name: Log in to NuGet
+      uses: NuGet/login@v1
+      id: nuget-login
+      with:
+        user: LogosPackages
+    - name: Publish
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NUGET_API_KEY: ${{ steps.nuget-login.outputs.NUGET_API_KEY }}
+      run: ./build.ps1 publish --skip package --trigger publish-nuget-output
