@@ -45,7 +45,7 @@ jobs:
 
   publish:
     name: Publish
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     needs: build
     if: github.repository_owner == 'Faithlife' && github.ref == 'refs/heads/master'
     steps:
