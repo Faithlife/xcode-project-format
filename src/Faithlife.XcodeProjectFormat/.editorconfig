@@ -1,0 +1,6 @@
+# Source folders mirror the Swift package's Sources/Library layout; namespaces follow only the top-level Schema and Serialization folders.
+[*.cs]
+dotnet_diagnostic.IDE0130.severity = none
+
+# List<T> properties mirror the Swift API's mutable arrays.
+dotnet_diagnostic.CA1002.severity = none
